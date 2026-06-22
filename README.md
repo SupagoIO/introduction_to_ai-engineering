@@ -1,20 +1,18 @@
-# AIエンジニアリング研修 Beginners Guide
+# AIエンジニアリング研修 導入 (Introduction)
 
 このフォルダは、研修で使うNotebookと実演用データを管理する場所です。各回ごとにフォルダを分けます。
 
 ## フォルダ構成
 
 ```text
-ai-engineering/
-  beginners-guide/
-    README.md
-    pyproject.toml
-    01_AIの仕組み/
-      01_neural_network_learning_demo.ipynb
-      data/
-        diagnostician_routing/
-          doctor_master.csv
-          routing_requests.csv
+README.md
+pyproject.toml
+01_AIの仕組み/
+  01_neural_network_learning_demo.ipynb
+  data/
+    diagnostician_routing/
+      doctor_master.csv
+      routing_requests.csv
 ```
 
 今後、第2回以降のNotebookを追加する場合は、回ごとの内容が分かるフォルダ名で追加します。
@@ -48,10 +46,9 @@ accuracyは医学的正解率ではなく、予測1位の診断士IDがこのCSV
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-環境を作成します。
+このリポジトリのルートで環境を作成します。
 
 ```bash
-cd /Users/kanam/Business/Supago/lectures/ai-engineering/beginners-guide
 uv sync
 ```
 

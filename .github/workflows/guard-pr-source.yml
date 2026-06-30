@@ -1,0 +1,52 @@
+name: guard-pr-source
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+      - ready_for_review
+
+permissions:
+  contents: read
+
+jobs:
+  guard-pr-source:
+    name: guard-pr-source / guard-pr-source
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check pull request source branch
+        env:
+          GUARD_BASE_BRANCH: ${{ github.base_ref }}
+          GUARD_HEAD_BRANCH: ${{ github.head_ref }}
+          GUARD_BASE_REPOSITORY: ${{ github.event.pull_request.base.repo.full_name }}
+          GUARD_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          set -eu
+
+          if [ "$GUARD_BASE_BRANCH" = "staging" ]; then
+            if [ "$GUARD_HEAD_BRANCH" != "main" ] && [ "$GUARD_HEAD_BRANCH" != "production" ]; then
+              echo "guard-pr-source: '${GUARD_HEAD_REPOSITORY}:${GUARD_HEAD_BRANCH}' may target '${GUARD_BASE_REPOSITORY}:staging'."
+              exit 0
+            fi
+
+            echo "guard-pr-source: staging accepts pull requests only from branches other than main or production." >&2
+            echo "guard-pr-source: received '${GUARD_HEAD_REPOSITORY}:${GUARD_HEAD_BRANCH}'." >&2
+            exit 1
+          fi
+
+          if [ "$GUARD_BASE_BRANCH" != "main" ] && [ "$GUARD_BASE_BRANCH" != "production" ]; then
+            echo "guard-pr-source: base branch '${GUARD_BASE_BRANCH}' is not protected by this guard."
+            exit 0
+          fi
+
+          if [ "$GUARD_HEAD_BRANCH" = "staging" ] && [ "$GUARD_HEAD_REPOSITORY" = "$GUARD_BASE_REPOSITORY" ]; then
+            echo "guard-pr-source: '${GUARD_HEAD_REPOSITORY}:${GUARD_HEAD_BRANCH}' may target '${GUARD_BASE_REPOSITORY}:${GUARD_BASE_BRANCH}'."
+            exit 0
+          fi
+
+          echo "guard-pr-source: '${GUARD_BASE_BRANCH}' accepts pull requests only from '${GUARD_BASE_REPOSITORY}:staging'." >&2
+          echo "guard-pr-source: received '${GUARD_HEAD_REPOSITORY}:${GUARD_HEAD_BRANCH}'." >&2
+          exit 1
